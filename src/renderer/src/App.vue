@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import Versions from './components/Versions.vue'
 
+// #region 测试
 const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
+// #endregion
 </script>
 
 <template>
-  <img alt="logo" class="logo" src="./assets/electron.svg" />
-  <div class="creator">Powered by electron-vite                     </div>
+  <div class="font-bold">Powered by electron-vite</div>
   <div class="text">
     Build an Electron app with
-    <span class="vue">Vue</span>
+    <span class="vue">Vue </span>
     and
     <span class="ts">TypeScript</span>
   </div>
