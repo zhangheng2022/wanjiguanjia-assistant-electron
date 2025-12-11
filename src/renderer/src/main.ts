@@ -1,3 +1,4 @@
+import { pinia } from "@renderer/pinia"
 import { router } from "@renderer/router"
 import { installPlugins } from "@renderer/plugins"
 import App from "./App.vue"
@@ -12,6 +13,9 @@ const app = createApp(App)
 installPlugins(app)
 
 // 安装 pinia 和 router
-app.use(router)
+app.use(pinia).use(router)
 
-app.mount("#app")
+// router 准备就绪后挂载应用
+router.isReady().then(() => {
+  app.mount("#app")
+})

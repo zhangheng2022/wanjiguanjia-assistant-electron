@@ -4,6 +4,7 @@
 interface ImportMetaEnv {
   readonly RENDERER_VITE__APP_TITLE: string
   readonly RENDERER_VITE_ROUTER_HISTORY: 'hash' | 'html5'
+  readonly RENDERER_VITE_BASE_URL: string
 }
 
 interface ImportMeta {
