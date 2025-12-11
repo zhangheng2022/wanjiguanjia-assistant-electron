@@ -10,6 +10,7 @@ const dialogVisible = ref(true)
     <el-button type="warning">Warning</el-button>
     <el-button type="danger">Danger</el-button>
   </div>
+  <SvgIcon name="search" />
   <el-dialog v-model="dialogVisible" title="Tips" width="500" draggable>
     <span>It's a draggable Dialog</span>
     <template #footer>

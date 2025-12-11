@@ -34,10 +34,11 @@ export default defineConfig(
           }
         }
       ]
-    }
+    },
+    extends: [
+      './.eslintrc-auto-import.json',
+    ],
   },
-  extends: [
-    './.eslintrc-auto-import.json',
-  ],
+
   eslintConfigPrettier,
 )
