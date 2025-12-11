@@ -45,6 +45,9 @@ export default defineConfig({
       }),
       tailwindcss(), // 自动按需导入 API
       AutoImport({
+        eslintrc: {
+          enabled: true // <-- this
+        },
         imports: ["vue", "vue-router", "pinia"],
         dts: "src/types/auto/auto-imports.d.ts",
         resolvers: [ElementPlusResolver()]
