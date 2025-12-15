@@ -9,8 +9,20 @@ import { ElementPlusResolver } from "unplugin-vue-components/resolvers"
 import svgLoader from "vite-svg-loader"
 
 export default defineConfig({
-  main: {},
-  preload: {},
+  main: {
+    resolve: {
+      alias: {
+        '@main': resolve('src/main')
+      }
+    },
+  },
+  preload: {
+    resolve: {
+      alias: {
+        '@preload': resolve('src/preload')
+      }
+    },
+  },
   renderer: {
     resolve: {
       alias: {
