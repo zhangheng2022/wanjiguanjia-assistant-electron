@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const dialogVisible = ref(true)
+const dialogVisible = ref(true);
 </script>
 
 <template>

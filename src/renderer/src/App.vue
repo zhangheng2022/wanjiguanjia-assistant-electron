@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import zhCn from "element-plus/es/locale/lang/zh-cn" // Element Plus 中文包
+import zhCn from "element-plus/es/locale/lang/zh-cn"; // Element Plus 中文包
 </script>
 
 <template>

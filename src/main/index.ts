@@ -1,8 +1,9 @@
-import { app } from 'electron'
-import { useMenus } from "./system/menus"
-import WindowManage from "./system/window-manage"
+import { app } from "electron";
+import { useMenus } from "./system/menus";
+import WindowManage from "./system/window-manage";
 // import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { electronApp, optimizer, is } from "@electron-toolkit/utils";
+import { useMainDefaultIpc } from "./system/ipc-main";
 // import icon from '../../resources/icon.png?asset'
 
 // function createWindow(): void {
@@ -75,22 +76,20 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 // // In this file you can include the rest of your app's specific main process
 // // code. You can also put them in separate files and require them here.
 function onAppReady() {
-  electronApp.setAppUserModelId('com.electron')
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
-  })
-  new WindowManage().createWindow()
-  const { createMenu, createTray } = useMenus()
-  createMenu()
-  createTray()
+  new WindowManage().createWindow();
+  const { createMenu, createTray } = useMenus();
+  const { defaultIpc } = useMainDefaultIpc();
+  createMenu();
+  createTray();
+  defaultIpc();
 }
 
-app.whenReady().then(onAppReady)
+app.whenReady().then(onAppReady);
 
-app.on('window-all-closed', () => {
+app.on("window-all-closed", () => {
   // 所有平台均为所有窗口关闭就退出软件
-  app.quit()
-})
-app.on('browser-window-created', () => {
-  console.log('window-created')
-})
+  app.quit();
+});
+app.on("browser-window-created", (_event, window) => {
+  optimizer.watchWindowShortcuts(window);
+});

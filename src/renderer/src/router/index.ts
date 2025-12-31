@@ -1,8 +1,8 @@
-import type { RouteRecordRaw } from "vue-router"
-import { createRouter } from "vue-router"
-import { routerConfig } from "@renderer/router/config"
+import type { RouteRecordRaw } from "vue-router";
+import { createRouter } from "vue-router";
+import { routerConfig } from "@renderer/router/config";
 
-const Layouts = (): Promise<Component> => import("@renderer/layouts/index.vue")
+const Layouts = (): Promise<Component> => import("@renderer/layouts/index.vue");
 
 /**
  * @name 常驻路由
@@ -13,16 +13,16 @@ export const constantRoutes: RouteRecordRaw[] = [
     path: "/403",
     component: (): Promise<Component> => import("@renderer/pages/error/403.vue"),
     meta: {
-      hidden: true
-    }
+      hidden: true,
+    },
   },
   {
     path: "/404",
     component: (): Promise<Component> => import("@renderer/pages/error/404.vue"),
     meta: {
-      hidden: true
+      hidden: true,
     },
-    alias: "/:pathMatch(.*)*"
+    alias: "/:pathMatch(.*)*",
   },
   {
     path: "/",
@@ -36,15 +36,15 @@ export const constantRoutes: RouteRecordRaw[] = [
         meta: {
           title: "首页",
           svgIcon: "dashboard",
-          affix: true
-        }
-      }
-    ]
-  }
-]
+          affix: true,
+        },
+      },
+    ],
+  },
+];
 
 /** 路由实例 */
 export const router = createRouter({
   history: routerConfig.history,
-  routes: constantRoutes
-})
+  routes: constantRoutes,
+});
