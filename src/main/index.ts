@@ -1,9 +1,9 @@
 import { app } from "electron";
-import { useMenus } from "./system/menus";
-import WindowManage from "./system/window-manage";
+import { useMenus } from "@main/system/menus";
+import WindowManage from "@main/system/window-manage";
 // import { join } from 'path'
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
-import { useMainDefaultIpc } from "./system/ipc-main";
+import { useMainDefaultIpc } from "@main/system/ipc-main";
 // import icon from '../../resources/icon.png?asset'
 
 // function createWindow(): void {
