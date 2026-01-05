@@ -40,10 +40,10 @@ class Main {
     if (!this.isDownloadListenerRegistered && this.mainWindow) {
       this.mainWindow.webContents.session.on(
         "will-download",
-        (event: any, item: any, webContents: any) => {
+        (_: Electron.Event, item: Electron.DownloadItem) => {
           const filePath = join(app.getPath("downloads"), item.getFilename());
           item.setSavePath(filePath);
-          item.on("updated", (event: any, state: String) => {
+          item.on("updated", (_: Electron.Event, state: string) => {
             switch (state) {
               case "progressing":
                 webContentSend.DownloadProgress(
@@ -57,14 +57,15 @@ class Main {
                 break;
             }
           });
-          item.once("done", (event: any, state: String) => {
+          item.once("done", (_: Electron.Event, state: string) => {
             switch (state) {
-              case "completed":
+              case "completed": {
                 const data = {
                   filePath,
                 };
                 webContentSend.DownloadDone(this.mainWindow!.webContents, data);
                 break;
+              }
               case "interrupted":
                 webContentSend.DownloadError(this.mainWindow!.webContents, true);
                 dialog.showErrorBox("下载出错", "由于网络或其他未知原因导致下载出错.");
@@ -79,9 +80,12 @@ class Main {
     }
   }
 
-  start() {
+  start(): void {
     // 更新时检查有无同名文件，若有就删除，若无就开始下载
     stat(this.HistoryFilePath, async (err, stats) => {
+      if (err) {
+        console.error(err);
+      }
       try {
         if (stats) {
           await remove(this.HistoryFilePath);
