@@ -61,6 +61,7 @@ export default defineConfig({
       AutoImport({
         eslintrc: {
           enabled: true, // 开启eslint
+          filepath: "./.eslintrc-auto-import.mjs",
         },
         imports: ["vue", "vue-router", "pinia"],
         dts: "src/types/auto/auto-imports.d.ts",

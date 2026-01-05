@@ -1,8 +1,8 @@
 import { app } from "electron";
 import { useMenus } from "@main/system/menus";
 import WindowManage from "@main/system/window-manage";
-// import { join } from 'path'
-import { electronApp, optimizer, is } from "@electron-toolkit/utils";
+// import { join } from 'path11111'
+import { optimizer } from "@electron-toolkit/utils";
 import { useMainDefaultIpc } from "@main/system/ipc-main";
 // import icon from '../../resources/icon.png?asset'
 
@@ -75,7 +75,7 @@ import { useMainDefaultIpc } from "@main/system/ipc-main";
 
 // // In this file you can include the rest of your app's specific main process
 // // code. You can also put them in separate files and require them here.
-function onAppReady() {
+function onAppReady(): void {
   new WindowManage().createWindow();
   const { createMenu, createTray } = useMenus();
   const { defaultIpc } = useMainDefaultIpc();
