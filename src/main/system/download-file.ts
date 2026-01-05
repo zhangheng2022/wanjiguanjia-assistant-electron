@@ -52,7 +52,7 @@ class Main {
                 );
                 break;
               default:
-                webContentSend.DownloadError(this.mainWindow!.webContents, true);
+                webContentSend.DownloadError(this.mainWindow!.webContents, "error");
                 dialog.showErrorBox("下载出错", "由于网络或其他未知原因导致下载出错");
                 break;
             }
@@ -67,7 +67,7 @@ class Main {
                 break;
               }
               case "interrupted":
-                webContentSend.DownloadError(this.mainWindow!.webContents, true);
+                webContentSend.DownloadError(this.mainWindow!.webContents, "error");
                 dialog.showErrorBox("下载出错", "由于网络或其他未知原因导致下载出错.");
                 break;
               default:

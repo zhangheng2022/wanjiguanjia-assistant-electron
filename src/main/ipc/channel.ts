@@ -74,8 +74,8 @@ export class IpcChannelMainClass {
 export class IpcChannelRendererClass {
   // ipcRenderer
   DownloadProgress: IpcRendererEventListener<number> | null = null;
-  DownloadError: IpcRendererEventListener<Boolean> | null = null;
-  DownloadPaused: IpcRendererEventListener<Boolean> | null = null;
+  DownloadError: IpcRendererEventListener<unknown> | null = null;
+  DownloadPaused: IpcRendererEventListener<boolean> | null = null;
   DownloadDone: IpcRendererEventListener<{
     /**
      * 下载的文件路径
