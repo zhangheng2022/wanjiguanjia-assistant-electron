@@ -16,9 +16,9 @@ interface RouterConfig {
   thirdLevelRouteCache: boolean;
 }
 
-const VITE_ROUTER_HISTORY = import.meta.env.VITE_ROUTER_HISTORY;
+const VITE_ROUTER_HISTORY = import.meta.env.RENDERER_VITE_ROUTER_HISTORY;
 
-const VITE_PUBLIC_PATH = import.meta.env.VITE_PUBLIC_PATH;
+const VITE_PUBLIC_PATH = import.meta.env.RENDERER_VITE_PUBLIC_PATH;
 
 export const routerConfig: RouterConfig = {
   history:

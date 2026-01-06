@@ -1,10 +1,24 @@
 <script lang="ts" setup>
-const dialogVisible = ref(true);
+const dialogVisible = ref(false);
+
+const { ipcRendererChannel } = window;
+
+function handleOpenWin(): void {
+  console.log(ipcRendererChannel);
+
+  const data = {
+    url: "/printer/home",
+    winOptions: {
+      width: 1000,
+    },
+  };
+  ipcRendererChannel.OpenWin.invoke(data);
+}
 </script>
 
 <template>
   <div class="app-container">
-    <el-button type="primary">Primary</el-button>
+    <el-button type="primary" @click="handleOpenWin">打开新窗口</el-button>
     <el-button type="success">Success</el-button>
     <el-button type="info">Info</el-button>
     <el-button type="warning">Warning</el-button>
