@@ -12,13 +12,14 @@ class WindowManage {
   createWindow(): void {
     // Create the browser window.
     this.mainWindow = new BrowserWindow({
-      width: 900,
-      height: 670,
+      width: 1000,
+      height: 800,
+      minWidth: 800,
+      minHeight: 600,
       show: false,
       autoHideMenuBar: false,
       webPreferences: {
         preload: join(__dirname, "../preload/index.js"),
-        sandbox: false,
       },
     });
 

@@ -34,9 +34,21 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import("@renderer/pages/home/index.vue"),
         name: "Home",
         meta: {
-          title: "首页",
-          svgIcon: "dashboard",
-          affix: true,
+          title: "我的设备",
+        },
+      },
+    ],
+  },
+  {
+    path: "/printer",
+    component: Layouts,
+    children: [
+      {
+        path: "printer",
+        component: () => import("@renderer/pages/printer/index.vue"),
+        name: "Printer",
+        meta: {
+          title: "打印模板",
         },
       },
     ],

@@ -2,22 +2,31 @@ import { contextBridge, ipcRenderer, shell } from "electron";
 import { platform, release, arch } from "os";
 import { IpcChannelMainClass, IpcChannelRendererClass } from "@main/ipc/channel";
 
-function getIpcRenderer() {
-  const IpcRenderer: Record<string, any> = {};
+type IpcChannelListener = {
+  invoke?: (...args: unknown[]) => Promise<unknown>;
+  on?: (listener: (...args: unknown[]) => void) => void;
+  once?: (listener: (...args: unknown[]) => void) => void;
+  removeAllListeners?: () => void;
+};
+
+function getIpcRenderer(): Record<string, IpcChannelListener> {
+  const IpcRenderer: Record<string, IpcChannelListener> = {};
   Object.keys(new IpcChannelMainClass()).forEach((channel) => {
     IpcRenderer[channel] = {
-      invoke: async (args: any) => ipcRenderer.invoke(channel, args),
+      invoke: async (...args: unknown[]) => ipcRenderer.invoke(channel, ...args),
     };
   });
   Object.keys(new IpcChannelRendererClass()).forEach((channel) => {
+    const existing = IpcRenderer[channel] ?? {};
     IpcRenderer[channel] = {
-      on: (listener: (...args: any[]) => void) => {
-        ipcRenderer.removeListener(channel, listener);
-        ipcRenderer.on(channel, listener);
+      ...existing,
+      on: (listener: (...args: unknown[]) => void) => {
+        ipcRenderer.removeListener(channel, listener as (...args: unknown[]) => void);
+        ipcRenderer.on(channel, listener as (...args: unknown[]) => void);
       },
-      once: (listener: (...args: any[]) => void) => {
-        ipcRenderer.removeListener(channel, listener);
-        ipcRenderer.once(channel, listener);
+      once: (listener: (...args: unknown[]) => void) => {
+        ipcRenderer.removeListener(channel, listener as (...args: unknown[]) => void);
+        ipcRenderer.once(channel, listener as (...args: unknown[]) => void);
       },
       removeAllListeners: () => ipcRenderer.removeAllListeners(channel),
     };

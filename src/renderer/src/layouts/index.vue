@@ -1,8 +1,12 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import NavigationTop from "./components/NavigationTop.vue";
+</script>
 
 <template>
   <el-container>
-    <el-header>Header</el-header>
+    <el-header style="--el-header-padding: 0 8px">
+      <NavigationTop></NavigationTop>
+    </el-header>
     <el-main>
       <router-view v-slot="{ Component, route }">
         <component :is="Component" :key="route.path" />
