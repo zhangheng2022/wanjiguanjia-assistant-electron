@@ -1,14 +1,13 @@
-import { createAlova } from 'alova';
-import VueHook from 'alova/vue';
-import adapterFetch from 'alova/fetch';
-
+import { createAlova } from "alova";
+import VueHook from "alova/vue";
+import adapterFetch from "alova/fetch";
 
 export const alovaInstance = createAlova({
   baseURL: import.meta.env.RENDERER_VITE_BASE_URL,
   statesHook: VueHook,
   requestAdapter: adapterFetch(),
   async beforeRequest(method) {
-    method.config.headers.token = 'user token';
+    method.config.headers.token = "user token";
   },
   responded: {
     // 请求成功的拦截器
@@ -40,6 +39,6 @@ export const alovaInstance = createAlova({
     // 接收当前请求的method实例
     onComplete: async () => {
       // 处理请求完成逻辑
-    }
-  }
+    },
+  },
 });

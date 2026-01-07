@@ -2,7 +2,7 @@ import { shell, BrowserWindow } from "electron";
 import { join } from "path";
 import { is } from "@electron-toolkit/utils";
 
-class WindowManage {
+export class WindowManage {
   public mainWindow: BrowserWindow | null;
 
   constructor() {
@@ -41,4 +41,3 @@ class WindowManage {
     }
   }
 }
-export default WindowManage;
