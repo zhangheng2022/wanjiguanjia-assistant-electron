@@ -12,12 +12,12 @@ export class WindowManage {
   createWindow(): void {
     // Create the browser window.
     this.mainWindow = new BrowserWindow({
-      width: 1000,
+      width: 1200,
       height: 800,
-      minWidth: 800,
-      minHeight: 600,
+      minWidth: 1200,
+      minHeight: 800,
       show: false,
-      autoHideMenuBar: false,
+      autoHideMenuBar: true,
       webPreferences: {
         preload: join(__dirname, "../preload/index.js"),
       },
