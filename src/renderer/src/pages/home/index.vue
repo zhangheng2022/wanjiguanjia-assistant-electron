@@ -14,12 +14,20 @@ function handleOpenWin(): void {
   };
   ipcRendererChannel.OpenWin.invoke(data);
 }
+
+function handleStart(): void {
+  ipcRendererChannel.DiviceStart.invoke();
+}
+
+ipcRendererChannel.DiviceChange.on((event, data) => {
+  console.log("Received DiviceChange event:", event, data);
+});
 </script>
 
 <template>
   <div class="app-container">
     <el-button type="primary" @click="handleOpenWin">打开新窗口</el-button>
-    <el-button type="success">Success</el-button>
+    <el-button type="success" @click="handleStart">启动设备监听</el-button>
     <el-button type="info">Info</el-button>
     <el-button type="warning">Warning</el-button>
     <el-button type="danger">Danger</el-button>

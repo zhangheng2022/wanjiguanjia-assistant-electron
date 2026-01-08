@@ -3,20 +3,7 @@ import bplistCreator from "bplist-creator";
 import plist from "plist";
 import { EventEmitter } from "events";
 import { ItunesService } from "./itunes-service";
-
-/* ================== Types ================== */
-
-export type UsbmuxdMessage = {
-  MessageType: "Attached" | "Detached" | "Result" | string;
-  DeviceID?: number;
-  Properties?: {
-    ConnectionType: "USB" | "Network";
-    DeviceID: number;
-    LocationID: number;
-    ProductID: number;
-    SerialNumber: string;
-  };
-};
+import type { UsbmuxdMessage } from "./protocol/usbmux-protocol";
 
 export class UsbMuxClient extends EventEmitter {
   private socket?: net.Socket;

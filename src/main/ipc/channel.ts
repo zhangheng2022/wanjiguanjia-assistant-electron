@@ -1,4 +1,5 @@
 import type { ProgressInfo } from "electron-updater";
+import type { DeviceInfo } from "@main/core/protocol/device-info";
 
 export interface IpcMainEventListener<Send = void, Receive = void> {
   ipcMainHandle: Send extends void
@@ -70,6 +71,7 @@ export class IpcChannelMainClass {
      */
     sendData?: unknown;
   }> | null = null;
+  DiviceStart: IpcMainEventListener | null = null;
 }
 export class IpcChannelRendererClass {
   // ipcRenderer
@@ -110,4 +112,6 @@ export class IpcChannelRendererClass {
     status: string;
     message: string;
   }> | null = null;
+
+  DiviceChange: IpcRendererEventListener<DeviceInfo> | null = null;
 }

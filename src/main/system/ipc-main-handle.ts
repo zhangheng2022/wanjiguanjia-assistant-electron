@@ -4,6 +4,7 @@ import { is } from "@electron-toolkit/utils";
 // import { updater } from "./hot-updater";
 import DownloadFile from "./download-file";
 import Update from "./check-update";
+import { DeviceManager } from "@main/core/device-manager";
 import { IIpcMainHandle } from "../ipc";
 import { webContentSend } from "./web-content-send";
 
@@ -116,5 +117,11 @@ export class IpcMainHandleClass implements IIpcMainHandle {
     const windows = BrowserWindow.fromWebContents(event.sender);
     if (!windows) return;
     windows.show();
+  };
+  DiviceStart: (event: Electron.IpcMainInvokeEvent) => void | Promise<void> = (event) => {
+    console.log("DiviceStart invoked - functionality not implemented yet.");
+    const windwos = BrowserWindow.fromWebContents(event.sender);
+    if (!windwos) return;
+    new DeviceManager(windwos).start();
   };
 }
