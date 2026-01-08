@@ -7,7 +7,7 @@ import { ItunesService } from "./itunes-service";
 /* ================== Types ================== */
 
 export type UsbmuxdMessage = {
-  MessageType: string;
+  MessageType: "Attached" | "Detached" | "Result" | string;
   DeviceID?: number;
   Properties?: {
     ConnectionType: "USB" | "Network";
@@ -32,11 +32,7 @@ export class UsbMuxClient extends EventEmitter {
       const deviceService = new ItunesService("Apple Mobile Device Service");
       await deviceService.checkRunning();
     }
-    this.socket =
-      platform === "darwin"
-        ? net.connect({ path: "/var/run/usbmuxd" })
-        : net.connect(27015, "127.0.0.1");
-
+    this.socket = this.createSocket();
     this.bindSocket();
   }
 
@@ -56,9 +52,43 @@ export class UsbMuxClient extends EventEmitter {
 
     this.socket.on("data", (chunk: Buffer) => {
       this.buffer = Buffer.concat([this.buffer, chunk]);
-      const payload = chunk.subarray(16);
-      const payloadStr = payload.toString("utf8");
+      this.processBuffer();
+    });
+    this.socket.on("error", (err) => this.emit("error", err));
+    this.socket.on("close", () => this.emit("close"));
+  }
+
+  private createSocket(): net.Socket {
+    const { platform } = process;
+    if (platform === "darwin") {
+      return net.connect({
+        path: process.env.USBMUXD_SOCKET_PATH ?? "/var/run/usbmuxd",
+        timeout: 3000,
+      });
+    }
+    return net.connect({
+      host: "127.0.0.1",
+      port: 27015,
+      timeout: 3000,
+    });
+  }
+
+  private processBuffer(): void {
+    const HEADER_SIZE = 16;
+    while (this.buffer.length >= HEADER_SIZE) {
+      // 读取消息总长度（包括头部）
+      const messageLength = this.buffer.readUInt32LE(0);
+      // 检查是否有完整的消息
+      if (this.buffer.length < messageLength) {
+        break; // 等待更多数据
+      }
+      // 提取当前消息
+      const messageBuffer = this.buffer.subarray(0, messageLength);
+      this.buffer = this.buffer.subarray(messageLength);
+      // 提取 payload（跳过 16 字节头部）
+      const payload = messageBuffer.subarray(HEADER_SIZE);
       try {
+        const payloadStr = payload.toString("utf8");
         const parsed = plist.parse(payloadStr);
         console.log("✅ 解析成功:", parsed);
         this.dispatch(parsed as UsbmuxdMessage);
@@ -66,19 +96,17 @@ export class UsbMuxClient extends EventEmitter {
         console.error("❌ XML plist 解析失败:", err);
         this.emit("error", err);
       }
-    });
-    this.socket.on("error", (err) => this.emit("error", err));
-    this.socket.on("close", () => this.emit("close"));
+    }
   }
 
   private dispatch(msg: UsbmuxdMessage): void {
+    if (msg.MessageType === "Attached" && msg.Properties?.ConnectionType === "Network") return;
     this.emit("message", msg);
-
     switch (msg.MessageType) {
-      case "DeviceAdd":
+      case "Attached":
         this.emit("device:add", msg);
         break;
-      case "DeviceRemove":
+      case "Detached":
         this.emit("device:remove", msg);
         break;
       case "Result":

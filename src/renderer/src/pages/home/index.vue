@@ -24,7 +24,7 @@ function handleOpenWin(): void {
     <el-button type="warning">Warning</el-button>
     <el-button type="danger">Danger</el-button>
   </div>
-  <SvgIcon name="search" />
+  <SvgIcon name="search" style="color: red" />
   <el-dialog v-model="dialogVisible" title="Tips" width="500" draggable>
     <span>It's a draggable Dialog</span>
     <template #footer>

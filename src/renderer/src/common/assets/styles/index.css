@@ -1,1 +1,19 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary: var(--el-color-primary);
+  --color-page-color: var(--el-bg-color-page);
+}
+
+:root {
+  --el-color-primary: #1a64fa;
+  --el-color-primary-light-3: #7aa6ff;
+  --el-color-primary-light-5: #9ebeff;
+  --el-color-primary-light-7: #c7d9ff;
+  --el-color-primary-light-8: #d9e5ff;
+  --el-color-primary-light-9: #ebf0fa;
+  --el-color-primary-dark-2: #1451cc;
+
+  /* 页面背景色 */
+  --el-bg-color-page: #f7f7f9;
+}

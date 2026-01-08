@@ -35,6 +35,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: "Home",
         meta: {
           title: "我的设备",
+          svgIcon: "preserve-color/wdsb",
         },
       },
     ],
@@ -49,6 +50,22 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: "PrinterHome",
         meta: {
           title: "打印模板",
+          svgIcon: "preserve-color/damb",
+        },
+      },
+    ],
+  },
+  {
+    path: "/warranty",
+    component: Layouts,
+    children: [
+      {
+        path: "home",
+        component: () => import("@renderer/pages/warranty/index.vue"),
+        name: "WarrantyHome",
+        meta: {
+          title: "保修查询",
+          svgIcon: "preserve-color/bxcx",
         },
       },
     ],

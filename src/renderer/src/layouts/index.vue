@@ -4,10 +4,10 @@ import NavigationTop from "./components/NavigationTop.vue";
 
 <template>
   <el-container>
-    <el-header style="--el-header-padding: 0 8px">
+    <el-header style="--el-header-padding: 0">
       <NavigationTop></NavigationTop>
     </el-header>
-    <el-main>
+    <el-main class="bg-page-color" style="height: calc(100vh - 120px)">
       <router-view v-slot="{ Component, route }">
         <component :is="Component" :key="route.path" />
       </router-view>
