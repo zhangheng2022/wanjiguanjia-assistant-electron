@@ -1,0 +1,117 @@
+name: Electron 企业级多环境构建与发布流水线（Tag 驱动）
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - "test-v*"
+      - "pre-v*"
+      - "v*"
+
+jobs:
+  build:
+    name: 构建 Windows 安装包
+    runs-on: windows-latest
+
+    outputs:
+      env: ${{ steps.env_detect.outputs.env }}
+      version: ${{ steps.env_detect.outputs.version }}
+      build_time: ${{ steps.time.outputs.time }}
+
+    steps:
+      - name: 检出代码仓库
+        uses: actions/checkout@v4
+
+      - name: 识别发布环境与版本号
+        id: env_detect
+        shell: bash
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+
+          if [[ "$TAG" == test-* ]]; then
+            ENV="test"
+            VERSION="${TAG#test-}"
+          elif [[ "$TAG" == pre-* ]]; then
+            ENV="pre"
+            VERSION="${TAG#pre-}"
+          else
+            ENV="production"
+            VERSION="$TAG"
+          fi
+
+          echo "env=$ENV" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: 获取构建时间
+        id: time
+        shell: bash
+        run: |
+          echo "time=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: 安装项目依赖
+        run: npm install
+
+      - name: 构建 Windows 应用（MSI）
+        run: npm run build:win --mode ${{ steps.env_detect.outputs.env }}
+
+      - name: 整理构建产物（环境隔离）
+        shell: bash
+        run: |
+          mkdir -p artifacts/${{ steps.env_detect.outputs.env }}
+          cp dist/**/*.msi artifacts/${{ steps.env_detect.outputs.env }}/
+
+      - name: 仅上传当前环境 MSI
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-msi-${{ steps.env_detect.outputs.env }}
+          path: |
+            artifacts/${{ steps.env_detect.outputs.env }}/*.msi
+
+  release:
+    name: 创建或更新 Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 下载当前环境构建产物
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-msi-${{ needs.build.outputs.env }}
+          path: dist/
+
+      - name: 删除同名 Release（如果存在）
+        uses: dev-drprasad/delete-tag-and-release@v1.1
+        with:
+          tag_name: ${{ github.ref_name }}
+          delete_release: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 创建 GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: |
+            ${{ needs.build.outputs.env == 'test' && '🧪 测试版' || needs.build.outputs.env == 'pre' && '🚦 预发版' || '🚀 正式版' }} - ${{ needs.build.outputs.version }}
+
+          body: |
+            环境：${{ needs.build.outputs.env }}
+            版本：${{ needs.build.outputs.version }}
+            构建时间：${{ needs.build.outputs.build_time }}
+
+          prerelease: ${{ needs.build.outputs.env != 'production' }}
+
+          files: |
+            dist/*.msi
+
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
