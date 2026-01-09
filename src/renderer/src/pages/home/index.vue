@@ -1,16 +1,38 @@
 <script lang="ts" setup>
-const dialogVisible = ref(true);
+const dialogVisible = ref(false);
+
+const { ipcRendererChannel } = window;
+
+function handleOpenWin(): void {
+  console.log(ipcRendererChannel);
+
+  const data = {
+    url: "/printer/home",
+    winOptions: {
+      width: 1000,
+    },
+  };
+  ipcRendererChannel.OpenWin.invoke(data);
+}
+
+function handleStart(): void {
+  ipcRendererChannel.DiviceStart.invoke();
+}
+
+ipcRendererChannel.DiviceChange.on((event, data) => {
+  console.log("Received DiviceChange event:", event, data);
+});
 </script>
 
 <template>
   <div class="app-container">
-    <el-button type="primary">Primary</el-button>
-    <el-button type="success">Success</el-button>
+    <el-button type="primary" @click="handleOpenWin">打开新窗口</el-button>
+    <el-button type="success" @click="handleStart">启动设备监听</el-button>
     <el-button type="info">Info</el-button>
     <el-button type="warning">Warning</el-button>
     <el-button type="danger">Danger</el-button>
   </div>
-  <SvgIcon name="search" />
+  <SvgIcon name="search" style="color: red" />
   <el-dialog v-model="dialogVisible" title="Tips" width="500" draggable>
     <span>It's a draggable Dialog</span>
     <template #footer>

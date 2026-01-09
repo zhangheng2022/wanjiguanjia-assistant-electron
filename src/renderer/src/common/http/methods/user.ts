@@ -1,4 +1,3 @@
-import { alovaInstance } from '@renderer/common/http';
+import { alovaInstance } from "@renderer/common/http";
 
-
-export const getUserInfo = (params: any) => alovaInstance.Get('/user', { params });
+export const getUserInfo = (): Promise<unknown> => alovaInstance.Get("/user", {});

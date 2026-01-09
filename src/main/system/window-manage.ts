@@ -2,7 +2,7 @@ import { shell, BrowserWindow } from "electron";
 import { join } from "path";
 import { is } from "@electron-toolkit/utils";
 
-class WindowManage {
+export class WindowManage {
   public mainWindow: BrowserWindow | null;
 
   constructor() {
@@ -10,14 +10,13 @@ class WindowManage {
   }
 
   createWindow(): void {
-    // Create the browser window.
     this.mainWindow = new BrowserWindow({
-      width: 1000,
+      width: 1200,
       height: 800,
-      minWidth: 800,
-      minHeight: 600,
+      minWidth: 1200,
+      minHeight: 800,
       show: false,
-      autoHideMenuBar: false,
+      autoHideMenuBar: true,
       webPreferences: {
         preload: join(__dirname, "../preload/index.js"),
       },
@@ -31,9 +30,6 @@ class WindowManage {
       shell.openExternal(details.url);
       return { action: "deny" };
     });
-
-    // HMR for renderer base on electron-vite cli.
-    // Load the remote URL for development or the local html file for production.
     if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
       this.mainWindow.loadURL(process.env["ELECTRON_RENDERER_URL"]);
     } else {
@@ -41,4 +37,3 @@ class WindowManage {
     }
   }
 }
-export default WindowManage;

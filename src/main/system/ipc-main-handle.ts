@@ -4,6 +4,7 @@ import { is } from "@electron-toolkit/utils";
 // import { updater } from "./hot-updater";
 import DownloadFile from "./download-file";
 import Update from "./check-update";
+import { DeviceManager } from "@main/core/device-manager";
 import { IIpcMainHandle } from "../ipc";
 import { webContentSend } from "./web-content-send";
 
@@ -35,41 +36,35 @@ export class IpcMainHandleClass implements IIpcMainHandle {
   };
   OpenWin: (
     event: Electron.IpcMainInvokeEvent,
-    args: { url: string; IsPay?: boolean; PayUrl?: string; sendData?: unknown },
+    args: {
+      url: string;
+      sendData?: unknown;
+      winOptions?: Electron.BrowserWindowConstructorOptions;
+    },
   ) => void | Promise<void> = (_, arg) => {
     const childWin = new BrowserWindow({
-      titleBarStyle: import.meta.env.MAIN_VITE_IS_SYSTEM_TITLE ? "default" : "hidden",
-      height: 595,
-      width: 1140,
+      titleBarStyle: "hiddenInset",
+      width: 500,
+      height: 400,
       autoHideMenuBar: true,
-      minWidth: 842,
+      resizable: false,
+      minimizable: false,
+      maximizable: false,
       show: false,
       webPreferences: {
         sandbox: false,
         webSecurity: false,
         preload: join(__dirname, "../preload/index.js"),
       },
+      ...arg.winOptions,
     });
-    // childWin.loadURL(winURL + `#${arg.url}`);
     if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
       childWin.loadURL(process.env["ELECTRON_RENDERER_URL"] + `#${arg.url}`);
     } else {
       childWin.loadFile(join(__dirname, "../renderer/index.html") + `#${arg.url}`);
     }
     childWin.once("ready-to-show", () => {
-      // childWin.show()
-      if (arg.IsPay) {
-        // 检查支付时候自动关闭小窗口
-        const testUrl = setInterval(() => {
-          const Url = childWin.webContents.getURL();
-          if (arg.PayUrl && Url.includes(arg.PayUrl)) {
-            childWin.close();
-          }
-        }, 1200);
-        childWin.on("close", () => {
-          clearInterval(testUrl);
-        });
-      }
+      childWin.show();
     });
     // 渲染进程显示时触发
     childWin.once("show", () => {
@@ -80,7 +75,7 @@ export class IpcMainHandleClass implements IIpcMainHandle {
   IsUseSysTitle: (event: Electron.IpcMainInvokeEvent) => boolean | Promise<boolean> = async () => {
     return import.meta.env.MAIN_VITE_IS_SYSTEM_TITLE;
   };
-  AppClose: (event: Electron.IpcMainInvokeEvent) => void | Promise<void> = (_) => {
+  AppClose: (event: Electron.IpcMainInvokeEvent) => void | Promise<void> = () => {
     app.quit();
   };
   CheckUpdate: (event: Electron.IpcMainInvokeEvent) => void | Promise<void> = (event) => {
@@ -122,5 +117,11 @@ export class IpcMainHandleClass implements IIpcMainHandle {
     const windows = BrowserWindow.fromWebContents(event.sender);
     if (!windows) return;
     windows.show();
+  };
+  DiviceStart: (event: Electron.IpcMainInvokeEvent) => void | Promise<void> = (event) => {
+    console.log("DiviceStart invoked - functionality not implemented yet.");
+    const windwos = BrowserWindow.fromWebContents(event.sender);
+    if (!windwos) return;
+    new DeviceManager(windwos).start();
   };
 }

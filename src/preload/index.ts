@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer, shell } from "electron";
-import { platform, release, arch } from "os";
+// import { platform, release, arch } from "os";
 import { IpcChannelMainClass, IpcChannelRendererClass } from "@main/ipc/channel";
 
 type IpcChannelListener = {
@@ -10,6 +10,8 @@ type IpcChannelListener = {
 };
 
 function getIpcRenderer(): Record<string, IpcChannelListener> {
+  console.log("getIpcRenderer");
+
   const IpcRenderer: Record<string, IpcChannelListener> = {};
   Object.keys(new IpcChannelMainClass()).forEach((channel) => {
     IpcRenderer[channel] = {
@@ -17,6 +19,8 @@ function getIpcRenderer(): Record<string, IpcChannelListener> {
     };
   });
   Object.keys(new IpcChannelRendererClass()).forEach((channel) => {
+    console.log("channel", channel);
+
     const existing = IpcRenderer[channel] ?? {};
     IpcRenderer[channel] = {
       ...existing,
@@ -36,11 +40,11 @@ function getIpcRenderer(): Record<string, IpcChannelListener> {
 
 contextBridge.exposeInMainWorld("ipcRendererChannel", getIpcRenderer());
 
-contextBridge.exposeInMainWorld("systemInfo", {
-  platform: platform(),
-  release: release(),
-  arch: arch(),
-});
+// contextBridge.exposeInMainWorld("systemInfo", {
+//   platform: platform(),
+//   release: release(),
+//   arch: arch(),
+// });
 
 contextBridge.exposeInMainWorld("shell", shell);
 

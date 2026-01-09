@@ -49,7 +49,7 @@ class Update {
     });
   }
   // 负责向渲染进程发送信息
-  Message(mainWindow: BrowserWindow | null, type: number, data?: string) {
+  Message(mainWindow: BrowserWindow | null, type: number, data?: string): void {
     if (!mainWindow) return;
     const senddata = {
       state: type,
@@ -59,14 +59,14 @@ class Update {
   }
 
   // 执行自动更新检查
-  checkUpdate(mainWindow: BrowserWindow) {
+  checkUpdate(mainWindow: BrowserWindow): void {
     this.mainWindow = mainWindow;
     autoUpdater.checkForUpdates().catch((err) => {
       console.log("网络连接问题", err);
     });
   }
   // 退出并安装
-  quitAndInstall() {
+  quitAndInstall(): void {
     autoUpdater.quitAndInstall();
   }
 }
