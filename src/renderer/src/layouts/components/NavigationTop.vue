@@ -31,7 +31,8 @@
       </template>
     </div>
     <div class="basis-40 flex justify-end">
-      <el-button type="danger" icon="UserFilled" circle />
+      <Login v-if="!usePlatform.isLogin" :show-element="true"></Login>
+      <el-button v-else type="danger" icon="UserFilled" circle />
     </div>
   </div>
 </template>
@@ -39,8 +40,9 @@
 <script lang="ts" setup>
 import Logo from "@renderer/common/assets/images/logo.png";
 import { constantRoutes } from "@renderer/router";
+import { usePlatformStore } from "@renderer/pinia/stores/platform";
 const route = useRoute();
-
+const usePlatform = usePlatformStore();
 const noHiddenRoutes = computed(() => constantRoutes.filter((item) => !item.meta?.hidden));
 const activeMenu = computed(() => route.meta.activeMenu || route.path);
 console.log(noHiddenRoutes, activeMenu);
