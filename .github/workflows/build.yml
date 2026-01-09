@@ -1,0 +1,92 @@
+name: Electron 构建与发布流水线（Windows）
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: 构建 Windows 安装包
+    runs-on: windows-latest
+
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+
+    steps:
+      - name: 检出代码仓库
+        uses: actions/checkout@v4
+
+      - name: 安装 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: 安装项目依赖
+        run: npm install
+
+      - name: 读取项目版本号
+        id: get_version
+        run: |
+          $version = node -p "require('./package.json').version"
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: 构建 Windows 应用安装包
+        run: npm run build:win
+
+      # -----------------------------
+      # macOS 构建预留（未来启用）
+      # -----------------------------
+      # - name: 构建 macOS 应用安装包
+      #   if: runner.os == 'macOS'
+      #   run: npm run build:mac
+      # -----------------------------
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-artifacts
+          path: |
+            dist/**/*
+            !dist/**/*.blockmap
+            !dist/**/builder-debug.yml
+
+  release:
+    name: 创建版本并发布 Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码仓库
+        uses: actions/checkout@v4
+
+      - name: 下载构建产物
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-artifacts
+          path: dist/
+
+      - name: 创建 Git Tag
+        run: |
+          git tag v${{ needs.build.outputs.version }}
+          git push origin v${{ needs.build.outputs.version }}
+
+      - name: 发布到 GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.build.outputs.version }}
+          name: v${{ needs.build.outputs.version }} 正式版
+          body: |
+            🚀 版本 v${{ needs.build.outputs.version }} 发布
+
+            本次更新内容：
+            - 功能优化
+            - Bug 修复
+            - 性能改进
+
+          files: |
+            dist/**/*.exe
+            dist/**/*.msi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
