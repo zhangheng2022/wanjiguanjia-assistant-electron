@@ -10,7 +10,6 @@ export class WindowManage {
   }
 
   createWindow(): void {
-    // Create the browser window.
     this.mainWindow = new BrowserWindow({
       width: 1200,
       height: 800,
@@ -31,9 +30,6 @@ export class WindowManage {
       shell.openExternal(details.url);
       return { action: "deny" };
     });
-
-    // HMR for renderer base on electron-vite cli.
-    // Load the remote URL for development or the local html file for production.
     if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
       this.mainWindow.loadURL(process.env["ELECTRON_RENDERER_URL"]);
     } else {
