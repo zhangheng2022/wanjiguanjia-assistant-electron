@@ -2,38 +2,29 @@ import { ref } from "vue";
 import { pinia } from "@renderer/pinia";
 import { defineStore } from "pinia";
 import { login } from "@renderer/common/http/methods/login";
-import { LoginParams, LoginRequestParams, LoginResponse } from "@renderer/types/auth";
-
+import { LoginParams, LoginResponse } from "@renderer/types/auth";
+import { userInfoStoreHook } from "./user";
+import { usePlatformStoreHook } from "./platform";
 export const useAuthStore = defineStore(
   "Auth",
   () => {
-    const token = ref(localStorage.getItem("AuthToken") || "");
-    const UserInfo = ref(JSON.parse(localStorage.getItem("UserInfo") || "{}"));
+    const token = ref();
 
-    async function authLogin(params: LoginRequestParams): Promise<void> {
+    async function authLogin(params: LoginParams): Promise<void> {
       try {
+        const usePlatform = usePlatformStoreHook();
         const loginParams: LoginParams = {
-          username: params.account,
+          username: params.username,
           password: params.password,
           code: params.code,
           uuid: params.uuid,
+          loginType: usePlatform.platformType,
         };
-        const response = await login(loginParams);
+        const response = await login({ ...loginParams });
         const responseData = response as LoginResponse;
-        const accessToken = responseData.data?.access_token || responseData.data?.token;
+        const accessToken = responseData?.access_token || responseData?.token;
+        userInfoStoreHook().getInfo();
         token.value = accessToken as string;
-        await updateUserinfo();
-      } catch (error) {
-        console.error(error);
-        return Promise.reject(error);
-      }
-    }
-
-    async function updateUserinfo(): Promise<void> {
-      try {
-        // const { user } = await getUserInfo();
-        // UserInfo.value = user;
-        // localStorage.setItem("UserInfo", JSON.stringify(user));
       } catch (error) {
         console.error(error);
         return Promise.reject(error);
@@ -42,12 +33,11 @@ export const useAuthStore = defineStore(
 
     function clear(): void {
       localStorage.removeItem("AuthToken");
-      localStorage.removeItem("UserInfo");
+      localStorage.removeItem("userInfo");
       token.value = "";
-      UserInfo.value = {};
     }
 
-    return { token, UserInfo, authLogin, updateUserinfo, clear };
+    return { token, authLogin, clear };
   },
   {
     // 启用持久化

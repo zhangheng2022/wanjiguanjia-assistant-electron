@@ -3,6 +3,7 @@ export interface LoginParams {
   password: string;
   code?: string;
   uuid?: string;
+  loginType?: number;
 }
 
 export interface LoginRequestParams {
@@ -14,10 +15,8 @@ export interface LoginRequestParams {
 export interface LoginResponse {
   code: number;
   message: string;
-  data: {
-    access_token: string;
-    token?: string;
-  };
+  access_token: string;
+  token?: string;
 }
 export interface RegisterType {
   companyName: string;
@@ -26,4 +25,14 @@ export interface RegisterType {
   teamSize: string;
   businessModel: string;
   manageInvType: string;
+}
+export interface UserInfoType {
+  code: number;
+  data: {
+    phoneNumber: string;
+    platSource: number;
+    tenantName: string;
+    userName: string;
+  };
+  msg: string;
 }

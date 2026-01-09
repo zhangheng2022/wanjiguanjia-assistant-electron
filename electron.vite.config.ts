@@ -31,6 +31,21 @@ export default defineConfig({
         "@renderer": resolve("src/renderer/src"),
       },
     },
+    // vite 相关配置
+    server: {
+      port: 5174,
+      host: true,
+      open: false,
+      proxy: {
+        // https://cn.vitejs.dev/config/#server-proxy
+        "/find-goods-api": {
+          // target: 'http://localhost:8080',
+          target: "http://192.168.3.141:83", // 测试地址
+          // target: 'http://192.168.3.132:8080', // 月白地址
+          changeOrigin: true,
+        },
+      },
+    },
     plugins: [
       vue(),
       // 支持将 SVG 文件导入为 Vue 组件

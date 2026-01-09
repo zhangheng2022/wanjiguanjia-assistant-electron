@@ -95,8 +95,9 @@ import ComputedRegister from "./computed-register.vue";
 // import StoreRegister from "./components/store-register.vue";
 // import StoreLogin from "./components/store-login.vue";
 import { ref, computed } from "vue";
-import { usePlatformStore } from "@renderer/pinia/stores/platform";
-import { useAuthStore } from "@renderer/pinia/stores/auth";
+import { usePlatformStoreHook } from "@renderer/pinia/stores/platform";
+import { useAuthStoreHook } from "@renderer/pinia/stores/auth";
+import { userInfoStoreHook } from "@renderer/pinia/stores/user";
 
 defineProps({
   showElement: {
@@ -108,19 +109,19 @@ const dialogShow = defineModel("dialogShow", { type: Boolean, default: false });
 
 const emit = defineEmits(["success"]);
 
-const usePlatform = usePlatformStore();
-const _useAuthStore = useAuthStore();
-
+const usePlatform = usePlatformStoreHook();
+const useAuthStore = useAuthStoreHook();
+const userInfoStore = userInfoStoreHook();
 const computedUserinfo = computed(() => {
-  console.log(_useAuthStore.UserInfo, usePlatform.platformType);
+  console.log(userInfoStore.userInfo, usePlatform.platformType);
 
   let data = {
     name: "",
     avatar: "",
   };
   data = {
-    name: _useAuthStore.UserInfo?.userName,
-    avatar: _useAuthStore.UserInfo?.avatar,
+    name: userInfoStore.userInfo?.userName,
+    avatar: userInfoStore.userInfo?.avatar,
   };
   return data;
 });
@@ -131,14 +132,20 @@ function handleLogin(): void {
 
 function handleLogout(): void {
   usePlatform.platformType = "";
-  _useAuthStore.clear();
+  useAuthStore.clear();
 }
 
 const segtabActive = ref("2");
+usePlatform.updatePlatformType(segtabActive.value);
 function handleSegtabActive(val): void {
   segtabActive.value = val;
 }
-
+watch(
+  () => segtabActive.value,
+  (val) => {
+    usePlatform.updatePlatformType(val);
+  },
+);
 function loginSuccess(): void {
   dialogShow.value = false;
   emit("success");

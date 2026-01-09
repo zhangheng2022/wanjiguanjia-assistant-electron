@@ -1,11 +1,12 @@
 import { createAlova } from "alova";
 import VueHook from "alova/vue";
 import adapterFetch from "alova/fetch";
-import { useAuthStore } from "@renderer/pinia/stores/auth";
+import { useAuthStoreHook } from "@renderer/pinia/stores/auth";
+import { usePlatformStoreHook } from "@renderer/pinia/stores/platform";
 /** 退出登录并强制刷新页面（会重定向到登录页） */
 function logout(): void {
   // usePlatformStore().platformType = "";
-  useAuthStore().clear();
+  useAuthStoreHook().clear();
   ElMessage.error("登录过期，请重新登录");
   location.reload();
 }
@@ -15,12 +16,37 @@ export const alovaInstance = createAlova({
   requestAdapter: adapterFetch(),
   async beforeRequest(method) {
     // method.config.headers.token = "user token";
-    const token = localStorage.getItem("token") || "";
-    method.config.headers = {
-      ...method.config.headers,
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
-    };
+    const { meta = {} } = method;
+    const { skipToken = true } = meta;
+
+    // 获取 token
+    let token = "";
+    if (skipToken) {
+      token = useAuthStoreHook().token || "";
+    }
+
+    const arr = [
+      "/check-device/auth/login",
+      "/check-device/auth/lite/register",
+      "/check-device/auth/erp/register",
+    ];
+    if (arr.includes(method.url)) {
+      method.config.headers = {
+        ...method.config.headers,
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : "",
+        "from-source": "inner",
+      };
+      //
+    } else {
+      method.config.headers = {
+        ...method.config.headers,
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : "",
+        "from-source": "MarketTrade",
+        "plat-type": usePlatformStoreHook().platformType || 2,
+      };
+    }
   },
 
   responded: {
@@ -36,7 +62,8 @@ export const alovaInstance = createAlova({
       const json = await response.json();
       if (json.code !== 200) {
         // 抛出错误或返回reject状态的Promise实例时，此请求将抛出错误
-        throw new Error(json.message);
+        ElMessage.error(json.msg);
+        throw new Error(json.msg);
       }
       if (json.code === undefined) {
         ElMessage.error("非本系统的接口");

@@ -1,9 +1,9 @@
 <template>
   <div class="pa-4 login-warp">
     <el-form ref="formRef" :model="loginForm" size="large">
-      <el-form-item prop="account">
+      <el-form-item prop="username">
         <el-input
-          v-model="loginForm.account"
+          v-model="loginForm.username"
           placeholder="请输入账号"
           clearable
           :prefix-icon="Iphone"
@@ -48,8 +48,7 @@
 import { Iphone, Lock } from "@element-plus/icons-vue";
 import { ref, onMounted, toRaw } from "vue";
 import { ElMessage } from "element-plus";
-import { useAuthStore } from "@renderer/pinia/stores/auth";
-
+import { useAuthStoreHook } from "@renderer/pinia/stores/auth";
 const emit = defineEmits(["success", "register", "overlay"]);
 defineProps({
   type: {
@@ -71,15 +70,15 @@ function init(): void {
 }
 
 const loginForm = ref({
-  account: "",
+  username: "",
   password: "",
 });
 const storageAccountPassword = ref(false);
 const submitLoading = ref(false);
 async function onSubmit(): Promise<void> {
-  const { account, password } = toRaw(loginForm.value);
+  const { username, password } = toRaw(loginForm.value);
 
-  if (!account) {
+  if (!username) {
     ElMessage({
       message: "请输入账号",
       type: "warning",
@@ -95,7 +94,7 @@ async function onSubmit(): Promise<void> {
   }
   submitLoading.value = true;
   emit("overlay", true);
-  useAuthStore()
+  useAuthStoreHook()
     .authLogin(loginForm.value)
     .then(() => {
       if (storageAccountPassword.value) {

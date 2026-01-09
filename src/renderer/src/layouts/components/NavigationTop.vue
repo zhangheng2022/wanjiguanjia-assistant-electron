@@ -32,7 +32,21 @@
     </div>
     <div class="basis-40 flex justify-end">
       <Login v-if="!usePlatform.isLogin" :show-element="true"></Login>
-      <el-button v-else type="danger" icon="UserFilled" circle />
+      <div v-else class="flex flex-row items-center rounded-full px-4 py-2 cursor-pointer user">
+        <img class="img" src="" alt="" />
+        {{ userInfoStore.userInfo.tenantName }}
+        <el-dropdown>
+          <el-icon class="el-icon--right">
+            <el-icon><caret-bottom /></el-icon>
+          </el-icon>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item>退出登录</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
+      <!-- <el-button  type="danger" icon="UserFilled" circle /> -->
     </div>
   </div>
 </template>
@@ -40,9 +54,12 @@
 <script lang="ts" setup>
 import Logo from "@renderer/common/assets/images/logo.png";
 import { constantRoutes } from "@renderer/router";
-import { usePlatformStore } from "@renderer/pinia/stores/platform";
+import { usePlatformStoreHook } from "@renderer/pinia/stores/platform";
+import { userInfoStoreHook } from "@renderer/pinia/stores/user";
 const route = useRoute();
-const usePlatform = usePlatformStore();
+const usePlatform = usePlatformStoreHook();
+const userInfoStore = userInfoStoreHook();
+console.log(userInfoStore);
 const noHiddenRoutes = computed(() => constantRoutes.filter((item) => !item.meta?.hidden));
 const activeMenu = computed(() => route.meta.activeMenu || route.path);
 console.log(noHiddenRoutes, activeMenu);
@@ -54,4 +71,17 @@ const resolvePath = (parent: string, child: string): string => {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.user {
+  height: 37px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 113px 113px 113px 113px;
+  font-size: 12px;
+  .img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    margin-right: 4px;
+  }
+}
+</style>
