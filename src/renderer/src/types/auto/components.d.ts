@@ -11,7 +11,6 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    CompanyLogin: typeof import('../../components/login/form-login.vue')['default']
     ComputedRegister: typeof import('./../../components/login/computed-register.vue')['default']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElButton: typeof import('element-plus/es')['ElButton']

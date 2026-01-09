@@ -1,4 +1,4 @@
-import { exec } from "child_process";
+import { execFile } from "child_process";
 
 export class ItunesService {
   constructor(private readonly serviceName: string) {
@@ -12,7 +12,7 @@ export class ItunesService {
    */
   async isRunning(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      exec(`sc query "${this.serviceName}"`, (error, stdout) => {
+      execFile("sc", ["query", this.serviceName], (error, stdout) => {
         if (error) {
           return reject(error);
         }
@@ -26,7 +26,7 @@ export class ItunesService {
    */
   async start(): Promise<void> {
     return new Promise((resolve, reject) => {
-      exec(`net start "${this.serviceName}"`, (error) => {
+      execFile("net", ["start", this.serviceName], (error) => {
         if (error) {
           return reject(error);
         }
@@ -59,7 +59,7 @@ export class ItunesService {
    */
   async stop(): Promise<void> {
     return new Promise((resolve, reject) => {
-      exec(`net stop "${this.serviceName}"`, (error) => {
+      execFile("net", ["stop", this.serviceName], (error) => {
         if (error) return reject(error);
         resolve();
       });
